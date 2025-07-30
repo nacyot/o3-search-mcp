@@ -1,2 +1,17 @@
-# Empty .npmignore to prevent npm from using .gitignore
-# This ensures that all committed files (including build/) are included
+*.ts
+!*.d.ts
+tsconfig.json
+.env
+.env.local
+.env.example
+node_modules/
+.git/
+.gitignore
+pnpm-lock.yaml
+.claude/
+.notes/
+.prettierrc
+scripts/
+.mise.toml
+CHANGELOG.md
+.github/

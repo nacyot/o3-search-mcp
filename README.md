@@ -56,11 +56,11 @@ Also, since it's provided as an MCP server, the AI agent may decide on its own t
 Install from the latest GitHub repository:
 
 ```bash
-# Install globally from GitHub
-npm install -g nacyot/o3-search-mcp
+# Install globally from GitHub (using dist branch to avoid npm bug)
+npm install -g github:nacyot/o3-search-mcp#dist
 
-# Or with specific commit/tag
-npm install -g nacyot/o3-search-mcp#main
+# Or install from a specific release
+npm install -g github:nacyot/o3-search-mcp#v0.0.6
 ```
 
 Claude Code:

@@ -1,0 +1,42 @@
+name: build-and-push-dist
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  dist:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8.x
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          
+      - run: pnpm install --frozen-lockfile
+      
+      - run: pnpm run build && chmod +x build/index.js
+      
+      - name: Strip lifecycle scripts
+        run: |
+          npx --yes json -I -f package.json \
+            -e 'delete this.scripts.build; delete this.scripts.prepare; delete this.scripts.prepack'
+      
+      - name: Push to dist branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: dist
+          publish_dir: .
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy from ${{ github.sha }}'
