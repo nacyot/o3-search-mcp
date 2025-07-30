@@ -51,7 +51,17 @@ Also, since it's provided as an MCP server, the AI agent may decide on its own t
 
 ## Installation
 
-### npx (Recommended)
+### GitHub Installation (Recommended)
+
+Install from the latest GitHub repository:
+
+```bash
+# Install globally from GitHub
+npm install -g nacyot/o3-search-mcp
+
+# Or with specific commit/tag
+npm install -g nacyot/o3-search-mcp#main
+```
 
 Claude Code:
 
@@ -59,11 +69,14 @@ Claude Code:
 $ claude mcp add o3 \
 	-s user \  # If you omit this line, it will be installed in the project scope
 	-e OPENAI_API_KEY=your-api-key \
+	-e OPENAI_MODEL=openai/o3 \
 	-e SEARCH_CONTEXT_SIZE=medium \
 	-e REASONING_EFFORT=medium \
 	-e OPENAI_API_TIMEOUT=60000 \
 	-e OPENAI_MAX_RETRIES=3 \
-	-- npx o3-search-mcp
+	-e OPENAI_BASE_URL=https://your-proxy.example.com/v1 \
+	-e CUSTOM_HEADERS='{"x-api-key":"custom-key","x-org-id":"org-123"}' \
+	-- o3-search-mcp
 ```
 
 json:
@@ -72,17 +85,23 @@ json:
 {
   "mcpServers": {
     "o3-search": {
-      "command": "npx",
-      "args": ["o3-search-mcp"],
+      "command": "o3-search-mcp",
+      "args": [],
       "env": {
         "OPENAI_API_KEY": "your-api-key",
+        // Optional: OpenAI model name (default: o3)
+        "OPENAI_MODEL": "openai/o3",
         // Optional: low, medium, high (default: medium)
         "SEARCH_CONTEXT_SIZE": "medium",
         "REASONING_EFFORT": "medium",
         // Optional: API timeout in milliseconds (default: 60000)
         "OPENAI_API_TIMEOUT": "60000",
         // Optional: Maximum number of retries (default: 3)
-        "OPENAI_MAX_RETRIES": "3"
+        "OPENAI_MAX_RETRIES": "3",
+        // Optional: Custom OpenAI API base URL for proxy servers
+        "OPENAI_BASE_URL": "https://your-proxy.example.com/v1",
+        // Optional: Custom headers as JSON string
+        "CUSTOM_HEADERS": "{\"x-api-key\":\"custom-key\",\"x-org-id\":\"org-123\"}"
       }
     }
   }
@@ -94,7 +113,7 @@ json:
 If you want to download the code and run it locally:
 
 ```bash
-git clone git@github.com:yoshiko-pg/o3-search-mcp.git
+git clone git@github.com:nacyot/o3-search-mcp.git
 cd o3-search-mcp
 pnpm install
 pnpm build
@@ -106,10 +125,13 @@ Claude Code:
 $ claude mcp add o3 \
 	-s user \  # If you omit this line, it will be installed in the project scope
 	-e OPENAI_API_KEY=your-api-key \
+	-e OPENAI_MODEL=openai/o3 \
 	-e SEARCH_CONTEXT_SIZE=medium \
 	-e REASONING_EFFORT=medium \
 	-e OPENAI_API_TIMEOUT=60000 \
 	-e OPENAI_MAX_RETRIES=3 \
+	-e OPENAI_BASE_URL=https://your-proxy.example.com/v1 \
+	-e CUSTOM_HEADERS='{"x-api-key":"custom-key","x-org-id":"org-123"}' \
 	-- node /path/to/o3-search-mcp/build/index.js
 ```
 
@@ -123,17 +145,37 @@ json:
       "args": ["/path/to/o3-search-mcp/build/index.js"],
       "env": {
         "OPENAI_API_KEY": "your-api-key",
+        // Optional: OpenAI model name (default: o3)
+        "OPENAI_MODEL": "openai/o3",
         // Optional: low, medium, high (default: medium)
         "SEARCH_CONTEXT_SIZE": "medium",
         "REASONING_EFFORT": "medium",
         // Optional: API timeout in milliseconds (default: 60000)
         "OPENAI_API_TIMEOUT": "60000",
         // Optional: Maximum number of retries (default: 3)
-        "OPENAI_MAX_RETRIES": "3"
+        "OPENAI_MAX_RETRIES": "3",
+        // Optional: Custom OpenAI API base URL for proxy servers
+        "OPENAI_BASE_URL": "https://your-proxy.example.com/v1",
+        // Optional: Custom headers as JSON string
+        "CUSTOM_HEADERS": "{\"x-api-key\":\"custom-key\",\"x-org-id\":\"org-123\"}"
       }
     }
   }
 }
+```
+
+## Example: Using with Proxy Server
+
+If you're using a proxy server that requires custom headers:
+
+```sh
+claude mcp add o3 \
+    -s user \
+    -e OPENAI_API_KEY=your-api-key \
+    -e OPENAI_MODEL=your-org/o3 \
+    -e OPENAI_BASE_URL=https://your-proxy.example.com/v1 \
+    -e CUSTOM_HEADERS='{"x-api-key":"proxy-key","x-org-id":"12345","Authorization":"Bearer token"}' \
+    -- o3-search-mcp
 ```
 
 ## Environment Variables
@@ -141,10 +183,13 @@ json:
 | Environment Variable | Options | Default | Description |
 | --- | --- | --- | --- |
 | `OPENAI_API_KEY` | Required | - | OpenAI API Key |
+| `OPENAI_MODEL` | Optional | `o3` | OpenAI model name<br>Example: `openai/o3`, `o3-mini` |
 | `SEARCH_CONTEXT_SIZE` | Optional | `medium` | Controls the search context size<br>Values: `low`, `medium`, `high` |
 | `REASONING_EFFORT` | Optional | `medium` | Controls the reasoning effort level<br>Values: `low`, `medium`, `high` |
 | `OPENAI_API_TIMEOUT` | Optional | `60000` | API request timeout in milliseconds<br>Example: `120000` for 2 minutes |
 | `OPENAI_MAX_RETRIES` | Optional | `3` | Maximum number of retries for failed requests<br>The SDK automatically retries on rate limits (429), server errors (5xx), and connection errors |
+| `OPENAI_BASE_URL` | Optional | - | Custom OpenAI API base URL for proxy servers<br>Example: `https://your-proxy.example.com/v1` |
+| `CUSTOM_HEADERS` | Optional | - | Custom headers as JSON string<br>Example: `{"x-api-key":"custom-key","x-org-id":"org-123"}`<br>Any headers can be added to all API requests |
 
 ## Notes
 

@@ -10,11 +10,24 @@ const server = new McpServer({
   version: "0.0.1",
 });
 
+// Parse custom headers from environment variable
+let customHeaders: Record<string, string> = {};
+if (process.env.CUSTOM_HEADERS) {
+  try {
+    customHeaders = JSON.parse(process.env.CUSTOM_HEADERS);
+  } catch (error) {
+    console.error("Error parsing CUSTOM_HEADERS:", error);
+    console.error("CUSTOM_HEADERS should be a valid JSON string");
+  }
+}
+
 // Configuration from environment variables
 const config = {
   apiKey: process.env.OPENAI_API_KEY,
   maxRetries: parseInt(process.env.OPENAI_MAX_RETRIES || "3"),
   timeout: parseInt(process.env.OPENAI_API_TIMEOUT || "60000"),
+  baseURL: process.env.OPENAI_BASE_URL || undefined,
+  model: process.env.OPENAI_MODEL || "o3",
   searchContextSize: (process.env.SEARCH_CONTEXT_SIZE || "medium") as
     | "low"
     | "medium"
@@ -23,13 +36,16 @@ const config = {
     | "low"
     | "medium"
     | "high",
+  customHeaders,
 };
 
 // Initialize OpenAI client with retry and timeout configuration
 const openai = new OpenAI({
   apiKey: config.apiKey,
+  baseURL: config.baseURL,
   maxRetries: config.maxRetries,
   timeout: config.timeout,
+  defaultHeaders: config.customHeaders,
 });
 
 // Define the o3-search tool
@@ -46,7 +62,7 @@ server.tool(
   async ({ input }) => {
     try {
       const response = await openai.responses.create({
-        model: "o3",
+        model: config.model,
         input,
         tools: [
           {

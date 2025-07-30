@@ -6,9 +6,6 @@
   "bin": {
     "o3-search-mcp": "./build/index.js"
   },
-  "files": [
-    "build/"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yoshiko-pg/o3-search-mcp.git"
